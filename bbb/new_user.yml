@@ -1,0 +1,9 @@
+---
+- name: Create New User
+  hosts: cloud
+  tasks:
+  - name: new useradd
+    user:
+      name: johnd
+      uid: 1234
+      state: present

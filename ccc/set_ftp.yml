@@ -1,0 +1,21 @@
+---
+- name: install the latest version of vsftpd
+  hosts: filesvr
+  tasks:
+  - name: install vsftpd package
+    yum:
+      name: vsftpd
+      state: latest
+  - name: ensure httpd is running
+    service:
+      name: vsftpd 
+      state: started
+  - name: Open port 21 for http access
+    firewalld:
+      service: ftp
+      permanent: true
+      state: enabled
+  - name: Restart the firewalld service to load in the firewall changes
+    service: 
+      name: firewalld 
+      state: restarted

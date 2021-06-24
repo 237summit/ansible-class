@@ -1,0 +1,54 @@
+---
+- name: install the latest version of Apache
+  hosts: all
+  tasks:
+  - name: install httpd package
+    yum:
+      name: httpd
+      state: latest
+  - name: install php package
+    yum:
+      name: php
+      state: latest
+  - name: install php-mysql package
+    yum:
+      name: php-mysql
+      state: latest
+  - name: install mariadb-server package
+    yum:
+      name: mariadb-server
+      state: latest
+  - name: Copy file with owner and permissions
+    copy:
+      src: /root/ccc/index.php
+      dest: /var/www/html/index.php
+      owner: root
+      group: root
+      mode: '0644'
+  - name: ensure httpd is running
+    service:
+      name: httpd 
+      state: started
+  - name: ensure mariadb is running
+    service:
+      name: mysqld 
+      state: started
+  - name: Open port 80 for http access
+    firewalld:
+      service: http
+      permanent: true
+      state: enabled
+  - name: Restart the firewalld service to load in the firewall changes
+    service: 
+      name: firewalld 
+      state: restarted
+
+- name: web server testing
+  hosts: localhost
+  tasks:
+  - name: connect servera web server
+    uri:
+      url: http://servera.test.com/index.php
+      return_content: yes
+      status_code: 200
+

@@ -1,0 +1,38 @@
+---
+- name: install the latest version of Apache
+  hosts: websrv
+  tasks:
+  - name: install httpd package
+    yum:
+      name: httpd
+      state: latest
+  - name: Copy file with owner and permissions
+    copy:
+      src: /root/bbb/index.html
+      dest: /var/www/html/index.html
+      owner: root
+      group: root
+      mode: '0644'
+  - name: ensure httpd is running
+    service:
+      name: httpd 
+      state: started
+  - name: Open port 80 for http access
+    firewalld:
+      service: http
+      permanent: true
+      state: enabled
+  - name: Restart the firewalld service to load in the firewall changes
+    service: 
+      name: firewalld 
+      state: restarted
+
+- name: web server testing
+  hosts: localhost
+  tasks:
+  - name: connect servera web server
+    uri:
+      url: http://servera.test.com
+      return_content: yes
+      status_code: 200
+
